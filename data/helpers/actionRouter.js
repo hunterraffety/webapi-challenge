@@ -34,16 +34,22 @@ router.post('/', async (req, res) => {
   // const actionId = req.param.id;
   const { project_id, description, notes } = req.body;
   const action = req.body;
+  const checkProjects = await Projects.get(project_id);
+
   if (Object.keys(req.body).length === 0) {
     res
       .status(400)
       .json({ message: 'Please provide a project id, description and notes.' });
   } else {
-    try {
-      const newAction = await Actions.insert(action);
-      res.status(201).json(newAction);
-    } catch (error) {
-      res.status(400).json({ message: 'Something went wrong.' });
+    if (!checkProjects) {
+      res.status(404).json({ message: 'No project with that ID found.' });
+    } else {
+      try {
+        const newAction = await Actions.insert(action);
+        res.status(201).json(newAction);
+      } catch (error) {
+        res.status(400).json({ message: 'Something went wrong.' });
+      }
     }
   }
 });
