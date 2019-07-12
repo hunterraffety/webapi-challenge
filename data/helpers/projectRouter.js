@@ -22,13 +22,20 @@ router.get('/', async (req, res) => {
 // get project actions
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  try {
-    const project = await Projects.getProjectActions(id);
-    res.status(200).json(project);
-  } catch (error) {
+  const project = await Projects.get(id);
+  if (!project) {
     res
-      .status(400)
-      .json({ message: "Cannot retrieve that project's actions." });
+      .status(404)
+      .json({ message: 'There is no action associated with that project' });
+  } else {
+    try {
+      const project = await Projects.getProjectActions(id);
+      res.status(200).json(project);
+    } catch (error) {
+      res
+        .status(400)
+        .json({ message: "Cannot retrieve that project's actions." });
+    }
   }
 });
 
