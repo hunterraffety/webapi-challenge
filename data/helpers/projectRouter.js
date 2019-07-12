@@ -18,7 +18,29 @@ router.get('/', async (req, res) => {
     res.status(400).json({ message: 'Cannot retrieve projects.' });
   }
 });
+
 // add a project
+router.post('/', async (req, res) => {
+  const { name, description } = req.body;
+  const validatedProject = { name, description };
+  console.log(validatedProject);
+  if (!name || !description) {
+    res
+      .status(400)
+      .json({ message: 'Please make sure there is a name and a description.' });
+  } else {
+    try {
+      const newProject = await Projects.insert(validatedProject);
+      if (newProject) {
+        res.status(201).json(validatedProject);
+      } else {
+        res.status(400).json({ message: 'Something went wrong.' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'There was an error.' });
+    }
+  }
+});
 
 // delete a project
 router.delete('/:id', async (req, res) => {
@@ -38,5 +60,26 @@ router.delete('/:id', async (req, res) => {
 });
 
 // update a project
+router.put('/:id', async (req, res) => {
+  const { name, description } = req.body;
+  const { id } = req.params;
+
+  if (!name || !description) {
+    res
+      .status(400)
+      .json({ message: 'Please make sure there is a name and a description.' });
+  } else {
+    try {
+      const project = await Projects.update(id, req.body);
+      if (project) {
+        res.status(200).json({ message: 'Successful update.' });
+      } else {
+        res.status(404).json({ error: 'That project could not be found.' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Error updating that project.' });
+    }
+  }
+});
 
 module.exports = router;
