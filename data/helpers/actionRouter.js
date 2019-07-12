@@ -30,11 +30,44 @@ router.get('/:id', async (req, res) => {
 });
 
 // create an action for a project
-router.post;
+router.post('/', async (req, res) => {
+  // const actionId = req.param.id;
+  const { project_id, description, notes } = req.body;
+  const action = req.body;
+  if (Object.keys(req.body).length === 0) {
+    res
+      .status(400)
+      .json({ message: 'Please provide a project id, description and notes.' });
+  } else {
+    try {
+      const newAction = await Actions.insert(action);
+      res.status(201).json(newAction);
+    } catch (error) {
+      res.status(400).json({ message: 'Something went wrong.' });
+    }
+  }
+});
+
 // update an action
 
 // delete an action
 
-// middleware to tie project_id to parameter id?
+// middleware to tie project_id to parameter id? idk.
+// function getProjectId(req, res, next) {
+//   const { id } = req.params;
+//   Projects.getProjectActions(id)
+//     .then(project => {
+//       if (!project) {
+//         res.status(404).json({ message: 'Invalid project ID.' });
+//       } else {
+//         console.log(project);
+//         projectId = project.project_id;
+//         next();
+//       }
+//     })
+//     .catch(() => {
+//       res.status(500).json({ message: 'Project could not be retrieved.' });
+//     });
+// }
 
 module.exports = router;
