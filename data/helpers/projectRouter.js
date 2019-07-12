@@ -1,10 +1,11 @@
 // dependencies
 const express = require('express');
 const Projects = require('./projectModel');
-
+const cors = require('cors');
 // express
 const router = express.Router();
 
+router.use(cors());
 router.use(express.json());
 
 // Project: name, description, completed
