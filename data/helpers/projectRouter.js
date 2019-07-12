@@ -19,6 +19,19 @@ router.get('/', async (req, res) => {
   }
 });
 
+// get project actions
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const project = await Projects.getProjectActions(id);
+    res.status(200).json(project);
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Cannot retrieve that project's actions." });
+  }
+});
+
 // add a project
 router.post('/', async (req, res) => {
   const { name, description } = req.body;
