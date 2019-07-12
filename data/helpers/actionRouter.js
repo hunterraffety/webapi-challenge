@@ -18,14 +18,14 @@ router.get('/', (req, res) => {
   }
 });
 
-// get action by id (useless? for now maybe. think.)
+// get action by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const actions = await Actions.get(id);
     res.status(200).send(actions);
   } catch (error) {
-    res.status(400).json({ message: 'Something went wrong.' });
+    res.status(404).json({ message: 'No action with that ID.' });
   }
 });
 
@@ -55,8 +55,44 @@ router.post('/', async (req, res) => {
 });
 
 // update an action
+router.put('/:id', async (req, res) => {
+  const { notes, description, completed } = req.body;
+  const { id } = req.params;
+
+  if (!notes || !description) {
+    res.status(400).json({
+      message: 'Please make sure there are notes and a description.'
+    });
+  } else {
+    try {
+      const changes = await Actions.update(id, req.body);
+      if (changes) {
+        res.status(200).json({ message: 'Successful update.' });
+      } else {
+        res.status(404).json({ error: 'That action could not be found.' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Error updating that action.' });
+    }
+  }
+});
 
 // delete an action
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const remove = await Actions.remove(id);
+    if (remove > 0) {
+      res.status(200).json({ message: 'Action deleted.' });
+    } else {
+      res.status(404).json({ error: 'An action with that ID was not found.' });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'There was an error deleting that action.' });
+  }
+});
 
 // middleware to tie project_id to parameter id? idk.
 // function getProjectId(req, res, next) {
